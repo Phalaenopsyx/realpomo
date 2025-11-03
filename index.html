@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⛧°♱. ⋆༺Pomodoro༻⋆. ♱°⛧</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: url('https://privateorchids.neocities.org/image_2025-11-02_230140058.png');
+      background-size: cover;
+      background-position: center;
+      margin: 0;
+      font-family: 'Baloo 2', cursive;
+      color: #ff8ab8;
+      text-align: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(255, 183, 208, 0.7);
+      position: relative;
+    }
+    h1 {
+      font-size: 2em;
+      color: #ff4c8b;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.6);
+    }
+    .timer {
+      background: #fff;
+      border: 5px solid #ff81a5;
+      border-radius: 50%;
+      width: 220px;
+      height: 220px;
+      line-height: 220px;
+      font-size: 3em;
+      margin: 20px auto;
+      box-shadow: 0 0 20px rgba(255, 183, 208, 0.8);
+      transition: transform 0.3s ease-in-out;
+    }
+    .timer:hover {
+      transform: scale(1.1);
+    }
+    .progress-bar-container {
+      width: 250px;
+      height: 10px;
+      background-color: #fff;
+      border-radius: 10px;
+      margin: 15px auto;
+      box-shadow: 0 0 15px rgba(255, 183, 208, 0.5);
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #ff81a5;
+      border-radius: 10px;
+    }
+    button {
+      background: #ffb6d0;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Baloo 2', cursive;
+    }
+    button:hover {
+      background: #ffa6c2;
+      transform: scale(1.1);
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    #status {
+      font-size: 1.4em;
+      margin-top: 20px;
+      color: #ff4c8b;
+    }
+
+    /* Shake image + animation */
+    #shakeImg {
+      position: absolute;
+      width: 200px;
+      height: auto;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 5;
+      display: none;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      20% { transform: translate(calc(-50% - 10px), -50%) rotate(-5deg); }
+      40% { transform: translate(calc(-50% + 10px), -50%) rotate(5deg); }
+      60% { transform: translate(calc(-50% - 10px), -50%) rotate(-5deg); }
+      80% { transform: translate(calc(-50% + 10px), -50%) rotate(5deg); }
+      100% { transform: translate(-50%, -50%) rotate(0deg); }
+    }
+    .shake {
+      animation: shake 0.7s ease;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>⛧°♱. ⋆༺Pomodoro༻⋆. ♱°⛧</h1>
+    <div id="status">Session 1 of 12 — Work</div>
+    <div class="timer" id="timer">25:00</div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div>
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset</button>
+      <button id="backBtn">Back</button>
+      <button id="skipBtn">Skip</button>
+    </div>
+
+    <!-- SndUp audio -->
+    <audio id="startSound" src="http://sndup.net/xbtmq"></audio>
+    <audio id="endSound" src="http://sndup.net/t946s"></audio>
+
+    <img id="shakeImg" src="" />
+
+  </div>
+
+  <script>
+    const timerDisplay = document.getElementById("timer");
+    const statusDisplay = document.getElementById("status");
+    const startSound = document.getElementById("startSound");
+    const endSound = document.getElementById("endSound");
+    const progressBar = document.getElementById("progressBar");
+    const shakeImg = document.getElementById("shakeImg");
+
+    const imageMap = {
+      Work: "https://privateorchids.neocities.org/5CDEA46B-9DAB-489A-92DD-63FA1A10B1BB.webp",
+      Break: "https://privateorchids.neocities.org/EB175A40-C9E2-4458-BB6E-1D402F5CC419.webp",
+      "Long Break": "https://privateorchids.neocities.org/B831E612-FC88-45DF-87A6-64471BEE1B5D.webp"
+    };
+
+    const sequence = [
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+      { label: "Work", minutes: 25 },
+      { label: "Long Break", minutes: 30 },
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+    ];
+
+    let current = 0;
+    let timeLeft = sequence[current].minutes * 60;
+    let timer;
+    let running = false;
+    let sessionNumber = 1;
+
+    function updateDisplay() {
+      const min = Math.floor(timeLeft / 60);
+      const sec = timeLeft % 60;
+      timerDisplay.textContent = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+      updateProgressBar();
+    }
+
+    function updateProgressBar() {
+      const progress = ((sequence[current].minutes * 60 - timeLeft) / (sequence[current].minutes * 60)) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    function updateStatus() {
+      statusDisplay.textContent = `Session ${sessionNumber} of 12 — ${sequence[current].label}`;
+    }
+
+    function startTimer() {
+      if (running) return;
+      running = true;
+
+      // Only play start sound when Start button is clicked
+      startSound.play().catch(() => {});
+
+      timer = setInterval(() => {
+        timeLeft--;
+        updateDisplay();
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          running = false;
+
+          // Play end sound
+          endSound.play().catch(() => {});
+
+          // PNG shake for 3.5s
+          playShake(sequence[current].label);
+
+          nextSession();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timer);
+      running = false;
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      running = false;
+      sessionNumber = 1;
+      current = 0;
+      timeLeft = sequence[current].minutes * 60;
+      updateStatus();
+      updateDisplay();
+    }
+
+    function nextSession() {
+      current++;
+      if (current >= sequence.length) {
+        current = 0;
+        sessionNumber++;
+        if (sessionNumber > 12) {
+          alert("🎀 You've completed all 12 Pomodoros for the day! 🎀");
+          sessionNumber = 1;
+        }
+      }
+      timeLeft = sequence[current].minutes * 60;
+      updateStatus();
+      updateDisplay();
+      startTimer();
+    }
+
+    function skipSession() {
+      pauseTimer();
+      nextSession();
+    }
+
+    function backSession() {
+      pauseTimer();
+      current--;
+      if (current < 0) current = sequence.length - 1;
+      timeLeft = sequence[current].minutes * 60;
+      updateStatus();
+      updateDisplay();
+    }
+
+    document.getElementById("startBtn").onclick = startTimer;
+    document.getElementById("pauseBtn").onclick = pauseTimer;
+    document.getElementById("resetBtn").onclick = resetTimer;
+    document.getElementById("skipBtn").onclick = skipSession;
+    document.getElementById("backBtn").onclick = backSession;
+
+    updateStatus();
+    updateDisplay();
+
+    function playShake(label) {
+      const url = imageMap[label];
+      if (!url) return;
+
+      shakeImg.src = url;
+      shakeImg.style.display = "block";
+      shakeImg.classList.add("shake");
+
+      setTimeout(() => {
+        shakeImg.classList.remove("shake");
+        shakeImg.style.display = "none";
+      }, 3500);
+    }
+  </script>
+
+</body>
+</html>
