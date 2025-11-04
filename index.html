@@ -253,41 +253,117 @@
       updateDisplay();
     }
 
+    function nextSession() {
+      current++;
+      if (current >= sequence.length) {
+        current = 0;
+        sessionNumber++;
+        if (sessionNumber > 12) {
+          alert("🎀 You've completed all 12 Pomodoros for the day! 🎀");
+          sessionNumber = 1;
+        }
+      }
+      timeLeft = sequence[current].minutes * 60;
+      updateDisplay();
+    }
+
     function skipSession() {
-      clearInterval(timer);
-      running = false;
+      pauseTimer();
       nextSession();
     }
 
     function backSession() {
-      clearInterval(timer);
-      running = false;
-      if (current > 0) {
-        current--;
-        sessionNumber--;
-        timeLeft = sequence[current].minutes * 60;
-        updateDisplay();
-      }
+      pauseTimer();
+      current--;
+      if (current < 0) current = sequence.length - 1;
+      timeLeft = sequence[current].minutes * 60;
+      updateDisplay();
     }
 
-    function nextSession() {
-      if (current < sequence.length - 1) {
-        current++;
-        sessionNumber++;
-        timeLeft = sequence[current].minutes * 60;
-        updateDisplay();
+    // Journal functionality
+    const journalInput = document.getElementById("journalInput");
+    const pinInput = document.getElementById("pinInput");
+
+    pinInput.addEventListener("input", () => {
+      if (pinInput.value === "1234") {
+        journalInput.disabled = false;
+        pinInput.disabled = true;
+        pinInput.value = "";
       }
+    });
+
+    // To-Do List functionality
+    const addTodoBtn = document.getElementById("addTodo");
+    const todoList = document.getElementById("todoList");
+
+    addTodoBtn.addEventListener("click", () => {
+      const newTask = prompt("Enter a new task:");
+      if (newTask) {
+        const li = document.createElement("li");
+        li.textContent = newTask;
+        todoList.appendChild(li);
+      }
+    });
+
+    // Habit Tracker functionality
+    const addHabitBtn = document.getElementById("addHabit");
+    const habitList = document.getElementById("habitList");
+
+    addHabitBtn.addEventListener("click", () => {
+      const newHabit = prompt("Enter a new habit:");
+      if (newHabit) {
+        const li = document.createElement("li");
+        li.textContent = newHabit;
+        habitList.appendChild(li);
+      }
+    });
+
+    // Doodle Board functionality
+    const canvas = document.getElementById("doodleCanvas");
+    const ctx = canvas.getContext("2d");
+    let painting = false;
+
+    function startPosition(e) {
+      painting = true;
+      draw(e);
     }
+
+    function endPosition() {
+      painting = false;
+      ctx.beginPath();
+    }
+
+    function draw(e) {
+      if (!painting) return;
+      ctx.lineWidth = 5;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#ff4c8b";
+      ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    }
+
+    canvas.addEventListener("mousedown", startPosition);
+    canvas.addEventListener("mouseup", endPosition);
+    canvas.addEventListener("mousemove", draw);
+
+    const saveDoodleBtn = document.getElementById("saveDoodle");
+
+    saveDoodleBtn.addEventListener("click", () => {
+      const dataUrl = canvas.toDataURL();
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = "doodle.png";
+      link.click();
+    });
 
     // Event listeners for Timer controls
-    document.getElementById("startBtn").addEventListener("click", startTimer);
-    document.getElementById("pauseBtn").addEventListener("click", pauseTimer);
-    document.getElementById("resetBtn").addEventListener("click", resetTimer);
-    document.getElementById("skipBtn").addEventListener("click", skipSession);
-    document.getElementById("backBtn").addEventListener("click", backSession);
-
-    // Initialize Timer display
-    updateDisplay();
+    document.getElementById("startBtn").onclick = startTimer;
+    document.getElementById("pauseBtn").onclick = pauseTimer;
+    document.getElementById("resetBtn").onclick = resetTimer;
+    document.getElementById("skipBtn").onclick = skipSession;
+    document.getElementById("backBtn").onclick = backSession;
   </script>
 </body>
 </html>
