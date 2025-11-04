@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -275,15 +275,17 @@
           <button id="saveNoteBtn" class="small-btn">Save</button>
           <button id="closeOverlay" class="close-x">Close ✕</button>
         </div>
+        
       </div>
 
       <textarea id="noteBody" placeholder="Write your journal here..."></textarea>
       <div class="muted" style="margin-top:10px;">Notes auto-save while unlocked. Use the PIN to lock/unlock editing.</div>
     </div>
-    <audio id="startSound" src="realstart.mp3" preload="auto"></audio>
-<audio id="endSound" src="realend.mp3" preload="auto"></audio>
-
+    
   </div>
+<!-- Audio elements for start and end sounds -->
+<audio id="startSound" src="realstart.mp3" preload="auto"></audio>
+<audio id="endSound" src="realend.mp3" preload="auto"></audio>
 
   <script>
     /*************** Pomodoro (kept simple) ****************/
@@ -689,4 +691,5 @@ function tick() {
   </script>
 </body>
 </html>
+
 
