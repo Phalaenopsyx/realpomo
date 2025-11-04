@@ -12,10 +12,11 @@
       --pink: #ff81a5;
       --rose: #ffb6d0;
       --muted: #806676;
-      --bubble-size: 320px;
+      --bubble-size: 320px; /* uniform size for bubbles (adjust if you want bigger) */
       --glass: rgba(255,255,255,0.88);
     }
 
+    /* Page */
     html,body{
       height:100%;
       margin:0;
@@ -24,8 +25,11 @@
       background-size: cover;
       background-position: center;
       color: var(--muted);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
 
+    /* centered container */
     .wrap{
       min-height:100vh;
       display:flex;
@@ -50,6 +54,7 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
     }
 
+    /* bubble base (uniform square) */
     .bubble{
       width: var(--bubble-size);
       height: var(--bubble-size);
@@ -69,6 +74,7 @@
 
     .bubble h2{ margin:6px 0 10px; font-size:1.15rem; color:var(--muted); text-align:center; }
 
+    /* common list area */
     .list{
       width:100%;
       height: calc(100% - 120px);
@@ -77,6 +83,7 @@
       padding:6px;
     }
 
+    /* controls */
     .controls { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
     button{
       background: var(--rose);
@@ -100,6 +107,7 @@
       font-family:'Baloo 2', cursive;
     }
 
+    /* pomodoro */
     .timer-circle{
       width:120px; height:120px; border-radius:50%;
       background:#fff; border:6px solid var(--pink);
@@ -109,6 +117,7 @@
     .progress-bar-container{ width:85%; height:10px; background:#fff; border-radius:8px; margin:10px 0; }
     .progress-bar{ height:100%; background:var(--pink); width:0%; border-radius:8px; }
 
+    /* ToDo / lists styling */
     .todo-list-block{
       background: rgba(255,255,255,0.7);
       border-radius:10px;
@@ -128,16 +137,19 @@
 
     .completed{ text-decoration:line-through; opacity:0.6; }
 
+    /* Habit tracker */
     .habit-block{ background: rgba(255,255,255,0.72); border-radius:10px; padding:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .habit-name{ font-weight:600; color:var(--muted); }
     .streak{ font-size:0.95rem; color:var(--pink); font-weight:700; }
 
+    /* journal list */
     .journal-entry{
       padding:8px; margin:8px 0; border-radius:10px; background: linear-gradient(180deg,#fff,#fff6);
       display:flex; justify-content:space-between; align-items:center; gap:8px;
     }
     .meta { font-size:0.85rem; color:#8a6b86; }
 
+    /* Notebook modal overlay */
     .overlay{
       position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1200;
       background: rgba(10,10,10,0.4);
@@ -160,21 +172,15 @@
       width:100%; min-height:60vh; resize:vertical; padding:18px; box-sizing:border-box; border-radius:10px;
       border: 1px solid rgba(200,150,170,0.35); font-family: 'Baloo 2', cursive; font-size:1.05rem;
       background-image: linear-gradient(transparent 28px, rgba(230,220,240,0.03) 28px);
-      background-size: 100% 28px;
+      background-size: 100% 28px; /* lined paper effect */
     }
     .close-x{ background:transparent; border:2px solid transparent; font-size:1.1rem; padding:6px 10px; border-radius:8px; }
 
+    /* small helper text */
     .muted{ font-size:0.83rem; color:#8a6b86; margin-top:6px; }
     .inline{ display:inline-block; }
 
-    /* Media player fill */
-    iframe#mediaPlayer{
-      width:100%;
-      height: calc(var(--bubble-size) - 70px);
-      border:none;
-      border-radius:10px;
-    }
-
+    /* responsive tweaks */
     @media (max-width:760px){
       :root{ --bubble-size: 280px; }
       .notebook textarea{ min-height:50vh; }
@@ -183,125 +189,478 @@
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="container">
 
-<!-- PIN overlay for the entire site -->
-<div class="overlay" id="sitePinOverlay" style="display:flex;align-items:center;justify-content:center;flex-direction:column;">
-  <div style="background:var(--glass);padding:30px;border-radius:14px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.4);">
-    <h2>Enter PIN to unlock site</h2>
-    <input type="password" id="sitePinInput" placeholder="Enter PIN (1234)" style="padding:10px;font-size:1.1rem;border-radius:10px;border:1px solid var(--pink);"/>
-    <div class="muted" style="margin-top:10px;">All features unlock with PIN.</div>
+      <!-- Pomodoro -->
+      <div class="bubble" id="pomBubble">
+        <h2>Pomodoro Timer</h2>
+        <div class="timer-circle" id="timer">25:00</div>
+        <div class="progress-bar-container"><div id="progressBar" class="progress-bar"></div></div>
+        <div class="controls">
+          <button id="startBtn">Start</button>
+          <button id="pauseBtn">Pause</button>
+          <button id="resetBtn">Reset</button>
+          <button id="skipBtn">Skip</button>
+        </div>
+        <div class="muted">Sequence: 25 / 5 / 25 / 5 / 25 / 5 / 25 / 30</div>
+      </div>
+
+      <!-- Journal -->
+      <div class="bubble" id="journalBubble">
+        <h2>Journal</h2>
+
+        <input type="password" id="pinInput" placeholder="Enter PIN to unlock (1234)" />
+        <div style="width:100%; margin-top:8px;">
+          <input type="text" id="newJournalTitle" class="add-input" placeholder="New entry title..." />
+          <div style="display:flex; gap:8px; justify-content:center; margin-top:6px;">
+            <button id="addJournalBtn">Add Entry</button>
+            <button id="deleteAllJournalBtn" class="small-btn">Delete All</button>
+          </div>
+        </div>
+
+        <div id="journalList" class="list" style="margin-top:8px;"></div>
+        <div class="muted">Click an entry to open as a cozy notebook. Editing is locked until PIN unlock.</div>
+      </div>
+
+      <!-- To-Do multi lists -->
+      <div class="bubble" id="todoBubble">
+        <h2>To-Do Lists</h2>
+        <input id="newListInput" class="add-input" placeholder="New list name..." />
+        <div style="display:flex; gap:8px; justify-content:center;">
+          <button id="addListBtn">Add List</button>
+          <button id="clearAllLists" class="small-btn">Clear All</button>
+        </div>
+
+        <div id="listsContainer" class="list" style="margin-top:8px;"></div>
+      </div>
+
+      <!-- Habit tracker -->
+      <div class="bubble" id="habitBubble">
+        <h2>Habit Tracker</h2>
+        <input id="newHabitInput" class="add-input" placeholder="New habit name..." />
+        <div style="display:flex; gap:8px; justify-content:center;">
+          <button id="addHabitBtn">Add Habit</button>
+          <button id="clearAllHabits" class="small-btn">Clear All</button>
+        </div>
+
+        <div id="habitList" class="list" style="margin-top:8px;"></div>
+      </div>
+
+      <!-- Media Player -->
+      <div class="bubble">
+        <h2>Media Player</h2>
+        <!-- Put playlist link like: videoseries?list=PLxxxx -->
+        <iframe id="mediaPlayer" width="240" height="140"
+          src="https://www.youtube.com/embed/videoseries?list=PLi0Z8b0B5u1a3GQe7Jz6k0rc1Qxw7c4QK"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+        <div class="muted">Replace iframe src with your playlist if you like.</div>
+      </div>
+
+    </div>
   </div>
-</div>
 
-<div class="wrap">
-  <div class="container">
-
-    <!-- Pomodoro -->
-    <div class="bubble" id="pomBubble">
-      <h2>Pomodoro Timer</h2>
-      <div class="timer-circle" id="timer">25:00</div>
-      <div class="progress-bar-container"><div id="progressBar" class="progress-bar"></div></div>
-      <div class="controls">
-        <button id="startBtn">Start</button>
-        <button id="pauseBtn">Pause</button>
-        <button id="resetBtn">Reset</button>
-        <button id="skipBtn">Skip</button>
+  <!-- Notebook modal overlay for journal editing -->
+  <div class="overlay" id="overlay">
+    <div class="notebook" role="dialog" aria-modal="true" aria-label="Journal notebook">
+      <div class="titlebar">
+        <div>
+          <input id="noteTitle" type="text" placeholder="Title..." style="padding:8px;border-radius:8px;border:1px solid rgba(200,150,170,0.3);font-family:'Baloo 2';font-weight:700;" />
+          <div class="meta" style="display:inline-block; margin-left:12px;" id="noteDate"></div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button id="saveNoteBtn" class="small-btn">Save</button>
+          <button id="closeOverlay" class="close-x">Close ✕</button>
+        </div>
       </div>
-      <div class="muted">Sequence: 25 / 5 / 25 / 5 / 25 / 5 / 25 / 30</div>
-    </div>
 
-    <!-- Journal -->
-    <div class="bubble" id="journalBubble">
-      <h2>Journal</h2>
-      <input type="text" id="newJournalTitle" class="add-input" placeholder="New entry title..." />
-      <div style="display:flex; gap:8px; justify-content:center; margin-top:6px;">
-        <button id="addJournalBtn">Add Entry</button>
-        <button id="deleteAllJournalBtn" class="small-btn">Delete All</button>
-      </div>
-      <div id="journalList" class="list" style="margin-top:8px;"></div>
-      <div class="muted">Click an entry to open as a cozy notebook.</div>
+      <textarea id="noteBody" placeholder="Write your journal here..."></textarea>
+      <div class="muted" style="margin-top:10px;">Notes auto-save while unlocked. Use the PIN to lock/unlock editing.</div>
     </div>
-
-    <!-- To-Do multi lists -->
-    <div class="bubble" id="todoBubble">
-      <h2>To-Do Lists</h2>
-      <input id="newListInput" class="add-input" placeholder="New list name..." />
-      <div style="display:flex; gap:8px; justify-content:center;">
-        <button id="addListBtn">Add List</button>
-        <button id="clearAllLists" class="small-btn">Clear All</button>
-      </div>
-      <div id="listsContainer" class="list" style="margin-top:8px;"></div>
-    </div>
-
-    <!-- Habit tracker -->
-    <div class="bubble" id="habitBubble">
-      <h2>Habit Tracker</h2>
-      <input id="newHabitInput" class="add-input" placeholder="New habit name..." />
-      <div style="display:flex; gap:8px; justify-content:center;">
-        <button id="addHabitBtn">Add Habit</button>
-        <button id="clearAllHabits" class="small-btn">Clear All</button>
-      </div>
-      <div id="habitList" class="list" style="margin-top:8px;"></div>
-    </div>
-
-    <!-- Media Player -->
-    <div class="bubble">
-      <h2>Media Player</h2>
-      <iframe id="mediaPlayer" src="https://www.youtube.com/embed/videoseries?list=PLi0Z8b0B5u1a3GQe7Jz6k0rc1Qxw7c4QK" allowfullscreen></iframe>
-      <div class="muted">Replace iframe src with your playlist if you like.</div>
-    </div>
-
   </div>
-</div>
 
-<!-- Journal Notebook Modal -->
-<div class="overlay" id="overlay">
-  <div class="notebook" role="dialog" aria-modal="true" aria-label="Journal notebook">
-    <div class="titlebar">
-      <div>
-        <input id="noteTitle" type="text" placeholder="Title..." style="padding:8px;border-radius:8px;border:1px solid rgba(200,150,170,0.3);font-family:'Baloo 2';font-weight:700;" />
-        <div class="meta" style="display:inline-block; margin-left:12px;" id="noteDate"></div>
-      </div>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <button id="saveNoteBtn" class="small-btn">Save</button>
-        <button id="closeOverlay" class="close-x">Close ✕</button>
-      </div>
-    </div>
-    <textarea id="noteBody" placeholder="Write your journal here..."></textarea>
-    <div class="muted" style="margin-top:10px;">Notes auto-save while unlocked.</div>
-  </div>
-</div>
+  <script>
+    /*************** Pomodoro (kept simple) ****************/
+    (function(){
+      const sequence = [25,5,25,5,25,5,25,30]; // minutes
+      let idx = 0;
+      let timeLeft = sequence[idx]*60;
+      let running = false;
+      let timer = null;
 
-<script>
-/************ Site-wide PIN ************/
-let siteUnlocked = false;
-const sitePinOverlay = document.getElementById('sitePinOverlay');
-const sitePinInput = document.getElementById('sitePinInput');
+      const timerEl = document.getElementById('timer');
+      const progressBar = document.getElementById('progressBar');
 
-sitePinInput.addEventListener('input', ()=>{
-  if (sitePinInput.value === '1234'){
-    siteUnlocked = true;
-    sitePinOverlay.style.display = 'none';
-    sitePinInput.value='';
-  }
-});
+      function updateDisplay(){
+        const m = Math.floor(timeLeft/60);
+        const s = timeLeft%60;
+        timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        const total = sequence[idx]*60;
+        const progress = ((total - timeLeft)/ total) * 100;
+        progressBar.style.width = `${progress}%`;
+      }
 
-/*************** Pomodoro ****************/
-(function(){ /* same as before */ })();
+      function tick(){
+        if (timeLeft>0){
+          timeLeft--;
+          updateDisplay();
+        } else {
+          clearInterval(timer); running=false;
+          idx = (idx+1) % sequence.length;
+          timeLeft = sequence[idx]*60;
+          updateDisplay();
+        }
+      }
 
-/*************** To-Do Multi-List ****************/
-(function(){ /* same as before */ })();
+      document.getElementById('startBtn').addEventListener('click', ()=> {
+        if (running) return;
+        running = true;
+        timer = setInterval(tick,1000);
+      });
+      document.getElementById('pauseBtn').addEventListener('click', ()=> {
+        running = false; clearInterval(timer);
+      });
+      document.getElementById('resetBtn').addEventListener('click', ()=> {
+        running = false; clearInterval(timer);
+        timeLeft = sequence[idx]*60; updateDisplay();
+      });
+      document.getElementById('skipBtn').addEventListener('click', ()=> {
+        running = false; clearInterval(timer);
+        idx = (idx+1) % sequence.length; timeLeft = sequence[idx]*60; updateDisplay();
+      });
 
-/*************** Habit Tracker ****************/
-(function(){ /* same as before */ })();
+      updateDisplay();
+    })();
 
-/*************** Journal ****************/
-(function(){ /* same as before, remove PIN logic from journal */ })();
+    /*************** To-Do Multi-List (localStorage) ****************/
+    (function(){
+      const listsContainer = document.getElementById('listsContainer');
+      const newListInput = document.getElementById('newListInput');
+      const addListBtn = document.getElementById('addListBtn');
+      const clearAllLists = document.getElementById('clearAllLists');
 
-/*************** Enter key shortcuts ****************/
-(function(){ /* same as before */ })();
+      let lists = JSON.parse(localStorage.getItem('todoLists_v1')) || [];
 
-</script>
+      function saveLists(){ localStorage.setItem('todoLists_v1', JSON.stringify(lists)); }
+      function renderLists(){
+        listsContainer.innerHTML = '';
+        if (lists.length === 0) {
+          listsContainer.innerHTML = '<div class="muted" style="padding:6px;">No lists yet — add one above ✨</div>';
+          return;
+        }
+        lists.forEach((list, li) => {
+          const block = document.createElement('div');
+          block.className = 'todo-list-block';
+          block.innerHTML = `
+            <div class="todo-list-title">
+              <div style="display:flex;gap:8px;align-items:center;">
+                <strong>${escapeHtml(list.name)}</strong>
+                <span class="muted">(${list.tasks.length})</span>
+              </div>
+              <div>
+                <button class="small-btn editListBtn">Edit name</button>
+                <button class="small-btn deleteListBtn">Delete List</button>
+              </div>
+            </div>
+            <div class="tasks-area"></div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <input placeholder="New task..." class="add-input taskInput" />
+              <button class="small-btn addTaskBtn">Add</button>
+            </div>
+          `;
+
+          // tasks area
+          const tasksArea = block.querySelector('.tasks-area');
+          list.tasks.forEach((task, ti) => {
+            const t = document.createElement('div');
+            t.className = 'todo-task';
+            if (task.completed) t.classList.add('completed');
+            t.innerHTML = `
+              <span class="task-text">${escapeHtml(task.text)}</span>
+              <span class="task-actions">
+                <button class="small-btn toggleBtn">${task.completed ? 'Undo' : 'Done'}</button>
+                <button class="small-btn deleteTaskBtn">Del</button>
+              </span>
+            `;
+            // toggle completion
+            t.querySelector('.toggleBtn').addEventListener('click', () => {
+              lists[li].tasks[ti].completed = !lists[li].tasks[ti].completed;
+              saveLists(); renderLists();
+            });
+            // delete
+            t.querySelector('.deleteTaskBtn').addEventListener('click', () => {
+              lists[li].tasks.splice(ti,1); saveLists(); renderLists();
+            });
+
+            tasksArea.appendChild(t);
+          });
+
+          // add task
+          const input = block.querySelector('.taskInput');
+          block.querySelector('.addTaskBtn').addEventListener('click', ()=>{
+            const v = input.value.trim(); if (!v) return;
+            lists[li].tasks.push({ text: v, completed: false });
+            input.value=''; saveLists(); renderLists();
+          });
+
+          // delete list
+          block.querySelector('.deleteListBtn').addEventListener('click', ()=>{
+            if (!confirm(`Delete list "${lists[li].name}"?`)) return;
+            lists.splice(li,1); saveLists(); renderLists();
+          });
+
+          // edit list name
+          block.querySelector('.editListBtn').addEventListener('click', ()=>{
+            const newName = prompt('New list name:', lists[li].name);
+            if (!newName) return;
+            lists[li].name = newName.trim(); saveLists(); renderLists();
+          });
+
+          listsContainer.appendChild(block);
+        });
+      }
+
+      addListBtn.addEventListener('click', ()=> {
+        const name = newListInput.value.trim(); if (!name) return;
+        lists.push({ name, tasks: [] });
+        newListInput.value=''; saveLists(); renderLists();
+      });
+
+      clearAllLists.addEventListener('click', ()=> {
+        if (!confirm('Clear all lists?')) return;
+        lists = []; saveLists(); renderLists();
+      });
+
+      renderLists();
+
+      // escape helper to prevent accidental HTML injection in titles/tasks
+      function escapeHtml(unsafe) { return (unsafe+'').replace(/[&<>"'`=\/]/g, function(s){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[s]; }); }
+
+    })();
+
+    /*************** Habit Tracker (localStorage) ****************/
+    (function(){
+      const habitListEl = document.getElementById('habitList');
+      const addHabitBtn = document.getElementById('addHabitBtn');
+      const newHabitInput = document.getElementById('newHabitInput');
+      const clearAllHabits = document.getElementById('clearAllHabits');
+
+      let habits = JSON.parse(localStorage.getItem('habits_v1')) || [];
+
+      function saveHabits(){ localStorage.setItem('habits_v1', JSON.stringify(habits)); }
+      function renderHabits(){
+        habitListEl.innerHTML = '';
+        if (habits.length===0){ habitListEl.innerHTML = '<div class="muted" style="padding:6px;">No habits yet — add one above ✨</div>'; return; }
+        habits.forEach((h, hi) => {
+          const block = document.createElement('div');
+          block.className = 'habit-block';
+          block.innerHTML = `
+            <div style="display:flex;flex-direction:column;">
+              <div class="habit-name">${escapeHtml(h.name)}</div>
+              <div class="muted">Manual streaks — click +1</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end; gap:6px;">
+              <div class="streak">Streak: <span id="s${hi}">${h.streak}</span></div>
+              <div style="display:flex; gap:6px;">
+                <button class="small-btn plusBtn">+1</button>
+                <button class="small-btn resetBtn">Reset</button>
+                <button class="small-btn delBtn">Delete</button>
+              </div>
+            </div>
+          `;
+          // plus
+          block.querySelector('.plusBtn').addEventListener('click', ()=>{
+            habits[hi].streak = (habits[hi].streak||0) + 1; saveHabits(); renderHabits();
+          });
+          // reset
+          block.querySelector('.resetBtn').addEventListener('click', ()=>{
+            if (!confirm('Reset this streak to 0?')) return;
+            habits[hi].streak = 0; saveHabits(); renderHabits();
+          });
+          block.querySelector('.delBtn').addEventListener('click', ()=>{
+            if (!confirm(`Delete habit "${habits[hi].name}"?`)) return;
+            habits.splice(hi,1); saveHabits(); renderHabits();
+          });
+
+          habitListEl.appendChild(block);
+        });
+      }
+
+      addHabitBtn.addEventListener('click', ()=>{
+        const name = newHabitInput.value.trim(); if (!name) return;
+        habits.push({ name, streak: 0 });
+        newHabitInput.value=''; saveHabits(); renderHabits();
+      });
+
+      clearAllHabits.addEventListener('click', ()=>{
+        if (!confirm('Clear all habits?')) return;
+        habits = []; saveHabits(); renderHabits();
+      });
+
+      renderHabits();
+      function escapeHtml(unsafe) { return (unsafe+'').replace(/[&<>"'`=\/]/g, function(s){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[s]; }); }
+    })();
+
+    /*************** Journal (multiple entries + modal notebook + localStorage + PIN) ****************/
+    (function(){
+      const journalListEl = document.getElementById('journalList');
+      const addJournalBtn = document.getElementById('addJournalBtn');
+      const newJournalTitle = document.getElementById('newJournalTitle');
+      const pinInput = document.getElementById('pinInput');
+      const deleteAllJournalBtn = document.getElementById('deleteAllJournalBtn');
+
+      const overlay = document.getElementById('overlay');
+      const noteTitle = document.getElementById('noteTitle');
+      const noteBody = document.getElementById('noteBody');
+      const noteDate = document.getElementById('noteDate');
+      const closeOverlay = document.getElementById('closeOverlay');
+      const saveNoteBtn = document.getElementById('saveNoteBtn');
+
+      let entries = JSON.parse(localStorage.getItem('journal_v1')) || [];
+      let unlocked = false;
+      let openIndex = null;
+
+      // PIN logic (simple)
+      pinInput.addEventListener('input', ()=>{
+        if (pinInput.value === '1234'){ unlocked = true; pinInput.value = ''; pinInput.placeholder = 'Unlocked!'; pinInput.disabled = true; renderJournal(); }
+      });
+
+      function saveEntries(){ localStorage.setItem('journal_v1', JSON.stringify(entries)); }
+
+      function makeDate(){ const d = new Date(); return d.toLocaleString(); }
+
+      function renderJournal(){
+        journalListEl.innerHTML = '';
+        if (entries.length === 0){
+          journalListEl.innerHTML = '<div class="muted" style="padding:6px;">No entries — add one above ✨</div>';
+          return;
+        }
+        entries.forEach((e, i) => {
+          const ent = document.createElement('div');
+          ent.className = 'journal-entry';
+          ent.innerHTML = `
+            <div>
+              <div style="font-weight:700;">${escapeHtml(e.title || '(Untitled)')}</div>
+              <div class="meta">${escapeHtml(e.date)}</div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button class="small-btn openBtn">Open</button>
+              <button class="small-btn renameBtn">Rename</button>
+              <button class="small-btn delBtn">Delete</button>
+            </div>
+          `;
+          // open
+          ent.querySelector('.openBtn').addEventListener('click', ()=>{
+            openIndex = i;
+            openNotebook(entries[i]);
+          });
+          // rename
+          ent.querySelector('.renameBtn').addEventListener('click', ()=>{
+            const newTitle = prompt('Rename entry:', entries[i].title || '');
+            if (newTitle === null) return;
+            entries[i].title = newTitle.trim(); saveEntries(); renderJournal();
+          });
+          // delete
+          ent.querySelector('.delBtn').addEventListener('click', ()=>{
+            if (!confirm('Delete this entry?')) return;
+            entries.splice(i,1); saveEntries(); renderJournal();
+          });
+
+          journalListEl.appendChild(ent);
+        });
+      }
+
+      addJournalBtn.addEventListener('click', ()=>{
+        const title = newJournalTitle.value.trim();
+        const newEntry = { title: title || '(Untitled)', body: '', date: makeDate() };
+        entries.unshift(newEntry); // newest first
+        newJournalTitle.value=''; saveEntries(); renderJournal();
+      });
+
+      deleteAllJournalBtn.addEventListener('click', ()=>{
+        if (!confirm('Delete all journal entries?')) return;
+        entries = []; saveEntries(); renderJournal();
+      });
+
+      // modal open/close
+      function openNotebook(entry){
+        noteTitle.value = entry.title || '';
+        noteBody.value = entry.body || '';
+        noteDate.textContent = entry.date || '';
+        overlay.style.display = 'flex';
+        // disable editing if locked
+        noteTitle.disabled = !unlocked;
+        noteBody.readOnly = !unlocked;
+        saveNoteBtn.disabled = !unlocked;
+      }
+
+      function closeNotebook(){
+        overlay.style.display = 'none';
+        openIndex = null;
+      }
+
+      closeOverlay.addEventListener('click', ()=> {
+        closeNotebook();
+      });
+
+      // save note (manual save button, also auto-saving on input)
+      saveNoteBtn.addEventListener('click', ()=> {
+        if (openIndex === null) return;
+        entries[openIndex].title = noteTitle.value.trim() || '(Untitled)';
+        entries[openIndex].body = noteBody.value;
+        entries[openIndex].date = makeDate();
+        saveEntries(); renderJournal();
+        noteDate.textContent = entries[openIndex].date;
+      });
+
+      // auto-save when unlocked + typing
+      noteBody.addEventListener('input', ()=> {
+        if (!unlocked || openIndex === null) return;
+        entries[openIndex].body = noteBody.value;
+        entries[openIndex].title = noteTitle.value.trim() || '(Untitled)';
+        entries[openIndex].date = makeDate();
+        saveEntries(); renderJournal();
+        noteDate.textContent = entries[openIndex].date;
+      });
+      noteTitle.addEventListener('input', ()=> {
+        if (!unlocked || openIndex === null) return;
+        entries[openIndex].title = noteTitle.value.trim() || '(Untitled)';
+        entries[openIndex].date = makeDate();
+        saveEntries(); renderJournal();
+        noteDate.textContent = entries[openIndex].date;
+      });
+
+      // clicking outside the notebook closes it
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeNotebook();
+      });
+
+      renderJournal();
+
+      // small helper
+      function escapeHtml(unsafe) { return (unsafe+'').replace(/[&<>"'`=\/]/g, function(s){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[s]; }); }
+
+    })();
+
+    /*************** Small accessibility: allow Enter to submit Add inputs ****************/
+    (function(){
+      const listInputs = [
+        {id:'newListInput', btn:'addListBtn'},
+        {id:'newJournalTitle', btn:'addJournalBtn'},
+        {id:'newHabitInput', btn:'addHabitBtn'}
+      ];
+      listInputs.forEach(item=>{
+        const inp = document.getElementById(item.id);
+        const btn = document.getElementById(item.btn);
+        if (inp && btn){
+          inp.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') btn.click(); });
+        }
+      });
+    })();
+
+  </script>
 </body>
 </html>
-
