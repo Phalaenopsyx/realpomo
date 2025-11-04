@@ -280,6 +280,9 @@
       <textarea id="noteBody" placeholder="Write your journal here..."></textarea>
       <div class="muted" style="margin-top:10px;">Notes auto-save while unlocked. Use the PIN to lock/unlock editing.</div>
     </div>
+    <audio id="startSound" src="realstart.mp3" preload="auto"></audio>
+<audio id="endSound" src="realend.mp3" preload="auto"></audio>
+
   </div>
 
   <script>
@@ -660,7 +663,30 @@
         }
       });
     })();
+// When the timer starts
+document.getElementById('startBtn').addEventListener('click', ()=> {
+  if (running) return;
+  running = true;
+  timer = setInterval(tick, 1000);
+  document.getElementById('startSound').play(); // Play start sound
+});
+
+// When the timer ends
+function tick() {
+  if (timeLeft > 0) {
+    timeLeft--;
+    updateDisplay();
+  } else {
+    clearInterval(timer);
+    running = false;
+    idx = (idx + 1) % sequence.length;
+    timeLeft = sequence[idx] * 60;
+    updateDisplay();
+    document.getElementById('endSound').play(); // Play end sound
+  }
+}
 
   </script>
 </body>
 </html>
+
