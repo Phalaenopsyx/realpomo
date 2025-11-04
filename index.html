@@ -208,7 +208,7 @@
       { label: "Work", minutes: 25 },
       { label: "Break", minutes: 5 },
       { label: "Work", minutes: 25 },
-      { label: "Long Break", minutes: 30 },
+      { label: "Long Break", minutes: 15 },
       { label: "Work", minutes: 25 },
       { label: "Break", minutes: 5 },
       { label: "Work", minutes: 25 },
@@ -224,7 +224,7 @@
     function updateDisplay() {
       const min = Math.floor(timeLeft / 60);
       const sec = timeLeft % 60;
-      timerDisplay.textContent = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+      timerDisplay.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
       updateProgressBar();
     }
 
@@ -240,8 +240,6 @@
     function startTimer() {
       if (running) return;
       running = true;
-
-      // Only play start sound when Start button is clicked
       startSound.play().catch(() => {});
 
       timer = setInterval(() => {
@@ -251,13 +249,8 @@
         if (timeLeft <= 0) {
           clearInterval(timer);
           running = false;
-
-          // Play end sound
           endSound.play().catch(() => {});
-
-          // PNG shake for 3.5s
           playShake(sequence[current].label);
-
           nextSession();
         }
       }, 1000);
@@ -317,21 +310,7 @@
     updateStatus();
     updateDisplay();
 
-    function playShake(label) {
-      const url = imageMap[label];
-      if (!url) return;
-
-      shakeImg.src = url;
-      shakeImg.style.display = "block";
-      shakeImg.classList.add("shake");
-
-      setTimeout(() => {
-        shakeImg.classList.remove("shake");
-        shakeImg.style.display = "none";
-      }, 3500);
-    }
-
-    // Journal Section (Pin Protection)
+    // Journal Section (PIN Protection)
     const pinPrompt = document.getElementById("pinPrompt");
     const journalSection = document.getElementById("journalSection");
     const pinInput = document.getElementById("pinInput");
@@ -339,7 +318,7 @@
 
     unlockJournalBtn.onclick = function () {
       const pin = pinInput.value;
-      if (pin === "1234") { // Hardcoded PIN for simplicity
+      if (pin === "1234") {
         pinPrompt.style.display = "none";
         journalSection.style.display = "block";
       } else {
@@ -347,7 +326,7 @@
       }
     };
 
-    // To-Do List Section
+    // To-Do List
     const addTaskBtn = document.getElementById("addTaskBtn");
     const taskInput = document.getElementById("taskInput");
     const taskList = document.getElementById("taskList");
@@ -362,7 +341,7 @@
       }
     };
 
-    // Habit Tracker Section
+    // Habit Tracker
     const addHabitBtn = document.getElementById("addHabitBtn");
     const habitInput = document.getElementById("habitInput");
     const habitList = document.getElementById("habitList");
@@ -377,7 +356,7 @@
       }
     };
 
-    // Doodle Board Section
+    // Doodle Board
     const doodleCanvas = document.getElementById("doodleCanvas");
     const ctx = doodleCanvas.getContext("2d");
 
@@ -414,7 +393,3 @@
 
 </body>
 </html>
-
-
-
-
