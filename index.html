@@ -1,362 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>⛧°♱. ⋆༺Pomodoro༻⋆. ♱°⛧</title>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg-accent: rgba(255,183,208,0.7);
-      --pink: #ff81a5;
-      --rose: #ffb6d0;
-      --muted: #806676;
-      --bubble-size: 320px;
-      --glass: rgba(255,255,255,0.88);
-    }
-    html,body{
-      height:100%;
-      margin:0;
-      font-family:'Baloo 2', cursive;
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       background-image: url('https://privateorchids.neocities.org/image_2025-11-02_230140058.png');
       background-size: cover;
       background-position: center;
-      color: var(--muted);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      margin: 0;
+      font-family: 'Baloo 2', cursive;
+      color: #806676;
+      text-align: center;
     }
-    .wrap{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:30px;
-      box-sizing:border-box;
-      backdrop-filter: blur(0px);
+    .container {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(255, 183, 208, 0.7);
+      position: relative;
     }
-    .container{
-      width:100%;
-      max-width:1200px;
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(var(--bubble-size), 1fr));
-      gap:20px;
-      align-items:start;
-      justify-items:center;
-      padding:20px;
-      box-shadow: 0 0 30px var(--bg-accent);
-      border-radius:18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    h1 {
+      font-size: 2em;
+      color: #ff4c8b;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.6);
     }
-    .bubble{
-      width: var(--bubble-size);
-      height: var(--bubble-size);
-      background: var(--glass);
-      border-radius:18px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08), 0 0 16px rgba(255,183,208,0.25);
-      padding:14px;
-      box-sizing:border-box;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      transition: transform .18s ease, box-shadow .18s ease;
-      position:relative;
-      overflow:hidden;
+    .timer {
+      background: #fff;
+      border: 5px solid #ff81a5;
+      border-radius: 50%;
+      width: 220px;
+      height: 220px;
+      line-height: 220px;
+      font-size: 3em;
+      margin: 20px auto;
+      box-shadow: 0 0 20px rgba(255, 183, 208, 0.8);
+      transition: transform 0.3s ease-in-out;
     }
-    .bubble:hover{ transform: translateY(-6px) scale(1.01); box-shadow: 0 8px 34px rgba(0,0,0,0.12), 0 0 30px rgba(255,183,208,0.33); }
-    .bubble h2{ margin:6px 0 10px; font-size:1.15rem; color:var(--muted); text-align:center; }
-    .list{ width:100%; height: calc(100% - 120px); overflow:auto; border-radius:10px; padding:6px; }
-    .controls { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
-    button{
-      background: var(--rose);
-      color:white;
-      border:none;
-      border-radius: 18px;
-      padding:8px 12px;
-      cursor:pointer;
-      font-family:'Baloo 2', cursive;
-      transition: transform .12s ease, background .12s ease;
+    .timer:hover {
+      transform: scale(1.1);
     }
-    button:hover{ transform:scale(1.04); background:var(--muted); }
-    input.add-input, input[type="text"]{
-      width: calc(100% - 12px);
-      padding:8px;
-      border-radius:10px;
-      border:1px solid var(--pink);
-      margin-bottom:6px;
-      box-sizing:border-box;
-      font-family:'Baloo 2', cursive;
+    .progress-bar-container {
+      width: 250px;
+      height: 10px;
+      background-color: #fff;
+      border-radius: 10px;
+      margin: 15px auto;
+      box-shadow: 0 0 15px rgba(255, 183, 208, 0.5);
     }
-    .timer-circle{
-      width:120px; height:120px; border-radius:50%;
-      background:#fff; border:6px solid var(--pink);
-      display:flex; align-items:center; justify-content:center;
-      font-size:1.6rem; box-shadow:0 8px 24px rgba(255,183,208,0.25);
+    .progress-bar {
+      height: 100%;
+      background-color: #ff81a5;
+      border-radius: 10px;
     }
-    .progress-bar-container{ width:85%; height:10px; background:#fff; border-radius:8px; margin:10px 0; }
-    .progress-bar{ height:100%; background:var(--pink); width:0%; border-radius:8px; }
-    .todo-list-block{ background: rgba(255,255,255,0.7); border-radius:10px; padding:8px; margin-bottom:8px; }
-    .todo-list-title{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; }
-    .todo-task{ padding:6px; margin:6px 0; border-radius:8px; background:#ffe3ec; font-size:0.95rem; display:flex; justify-content:space-between; align-items:center; }
-    .small-btn{ padding:4px 8px; border-radius:10px; font-size:0.9rem; }
-    .task-actions{ display:flex; gap:6px; align-items:center; }
-    .completed{ text-decoration:line-through; opacity:0.6; }
-    .habit-block{ background: rgba(255,255,255,0.72); border-radius:10px; padding:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .habit-name{ font-weight:600; color:var(--muted); }
-    .streak{ font-size:0.95rem; color:var(--pink); font-weight:700; }
-    .journal-entry{ padding:8px; margin:8px 0; border-radius:10px; background: linear-gradient(180deg,#fff,#fff6); display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .meta { font-size:0.85rem; color:#8a6b86; }
-    .overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1200; background: rgba(10,10,10,0.4); backdrop-filter: blur(6px); }
-    .notebook{
-      width: min(900px, 92%);
-      max-height: 90vh;
-      background: linear-gradient(180deg,#fff 0%, #fff8f2 100%);
-      border-radius:14px;
-      padding:20px;
-      box-sizing:border-box;
-      box-shadow:0 20px 60px rgba(0,0,0,0.35);
-      overflow:auto;
-      position:relative;
-      border: 8px solid rgba(255,200,220,0.85);
+    button {
+      background: #ffb6d0;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Baloo 2', cursive;
     }
-    .notebook .titlebar{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
-    .notebook textarea{
-      width:100%; min-height:60vh; resize:vertical; padding:18px; box-sizing:border-box; border-radius:10px;
-      border: 1px solid rgba(200,150,170,0.35); font-family: 'Baloo 2', cursive; font-size:1.05rem;
-      background-image: linear-gradient(transparent 28px, rgba(230,220,240,0.03) 28px);
-      background-size: 100% 28px;
+    button:hover {
+      background: #806676;
+      transform: scale(1.1);
     }
-    .close-x{ background:transparent; border:2px solid transparent; font-size:1.1rem; padding:6px 10px; border-radius:8px; }
-    .muted{ font-size:0.83rem; color:#8a6b86; margin-top:6px; }
-    .inline{ display:inline-block; }
-    @media (max-width:760px){
-      :root{ --bubble-size: 280px; }
-      .notebook textarea{ min-height:50vh; }
+    button:active {
+      transform: scale(0.95);
+    }
+    #status {
+      font-size: 1.4em;
+      margin-top: 20px;
+      color: #ff4c8b;
+    }
+
+    /* Shake image + animation */
+    #shakeImg {
+      position: absolute;
+      width: 200px;
+      height: auto;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 5;
+      display: none;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      20% { transform: translate(calc(-50% - 10px), -50%) rotate(-5deg); }
+      40% { transform: translate(calc(-50% + 10px), -50%) rotate(5deg); }
+      60% { transform: translate(calc(-50% - 10px), -50%) rotate(-5deg); }
+      80% { transform: translate(calc(-50% + 10px), -50%) rotate(5deg); }
+      100% { transform: translate(-50%, -50%) rotate(0deg); }
+    }
+    .shake {
+      animation: shake 0.7s ease;
     }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="container">
 
-      <!-- Pomodoro -->
-      <div class="bubble" id="pomBubble">
-        <h2>Pomodoro Timer</h2>
-        <div class="timer-circle" id="timer">25:00</div>
-        <div class="progress-bar-container"><div id="progressBar" class="progress-bar"></div></div>
-        <div class="controls">
-          <button id="startBtn">Start</button>
-          <button id="pauseBtn">Pause</button>
-          <button id="resetBtn">Reset</button>
-          <button id="skipBtn">Skip</button>
-        </div>
-        <div class="muted">Sequence: 25 / 5 / 25 / 5 / 25 / 5 / 25 / 30</div>
-      </div>
+  <div class="container">
+    <h1>⛧°♱. ⋆༺Pomodoro༻⋆. ♱°⛧</h1>
+    <div id="status">Session 1 of 12 — Work</div>
+    <div class="timer" id="timer">25:00</div>
 
-      <!-- Journal -->
-      <div class="bubble" id="journalBubble">
-        <h2>Journal</h2>
-        <input type="password" id="pinInput" placeholder="Enter PIN to unlock (1234)" />
-        <input type="text" id="newJournalTitle" class="add-input" placeholder="New entry title..." />
-        <div style="display:flex; gap:8px; justify-content:center; margin-top:6px;">
-          <button id="addJournalBtn">Add Entry</button>
-          <button id="deleteAllJournalBtn" class="small-btn">Delete All</button>
-        </div>
-        <div id="journalList" class="list" style="margin-top:8px;"></div>
-        <div class="muted">Click an entry to open as a cozy notebook. Editing is locked until PIN unlock.</div>
-      </div>
-
-      <!-- To-Do multi lists -->
-      <div class="bubble" id="todoBubble">
-        <h2>To-Do Lists</h2>
-        <input id="newListInput" class="add-input" placeholder="New list name..." />
-        <div style="display:flex; gap:8px; justify-content:center;">
-          <button id="addListBtn">Add List</button>
-          <button id="clearAllLists" class="small-btn">Clear All</button>
-        </div>
-        <div id="listsContainer" class="list" style="margin-top:8px;"></div>
-      </div>
-
-      <!-- Habit tracker -->
-      <div class="bubble" id="habitBubble">
-        <h2>Habit Tracker</h2>
-        <input id="newHabitInput" class="add-input" placeholder="New habit name..." />
-        <div style="display:flex; gap:8px; justify-content:center;">
-          <button id="addHabitBtn">Add Habit</button>
-          <button id="clearAllHabits" class="small-btn">Clear All</button>
-        </div>
-        <div id="habitList" class="list" style="margin-top:8px;"></div>
-      </div>
-
-      <!-- Media Player -->
-      <div class="bubble">
-        <h2>Media Player</h2>
-        <iframe id="mediaPlayer" width="240" height="140"
-          src="https://www.youtube.com/embed/videoseries?list=PLi0Z8b0B5u1a3GQe7Jz6k0rc1Qxw7c4QK"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-        <div class="muted">Replace iframe src with your playlist if you like.</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Notebook modal overlay for journal editing -->
-  <div class="overlay" id="overlay">
-    <div class="notebook" role="dialog" aria-modal="true" aria-label="Journal notebook">
-      <div class="titlebar">
-        <input id="noteTitle" type="text" placeholder="Title..." style="padding:8px;border-radius:8px;border:1px solid rgba(200,150,170,0.3);font-family:'Baloo 2';font-weight:700;" />
-        <div class="meta" id="noteDate"></div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button id="saveNoteBtn" class="small-btn">Save</button>
-          <button id="closeOverlay" class="close-x">Close ✕</button>
-        </div>
-      </div>
-      <textarea id="noteBody" placeholder="Write your journal here..."></textarea>
-      <div class="muted" style="margin-top:10px;">Notes auto-save while unlocked. Use the PIN to lock/unlock editing.</div>
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progressBar"></div>
     </div>
 
-    <!-- Audio files for Pomodoro -->
-    <audio id="startSound" src="TRUESTART.mp3" preload="auto"></audio>
-    <audio id="endSound" src="TRUEEND.mp3" preload="auto"></audio>
+    <div>
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset</button>
+      <button id="backBtn">Back</button>
+      <button id="skipBtn">Skip</button>
+    </div>
+
+    <!-- SndUp audio -->
+    <audio id="startSound" src="realstart.mp3"></audio>
+    <audio id="endSound" src="realend.mp3"></audio>
+
+    <img id="shakeImg" src="" />
+
   </div>
 
   <script>
-    /*************** Pomodoro Timer ****************/
-    (function(){
-      const sequence = [25,5,25,5,25,5,25,30]; 
-      let idx = 0;
-      let timeLeft = sequence[idx]*60;
-      let running = false;
-      let timer = null;
+    const timerDisplay = document.getElementById("timer");
+    const statusDisplay = document.getElementById("status");
+    const startSound = document.getElementById("startSound");
+    const endSound = document.getElementById("endSound");
+    const progressBar = document.getElementById("progressBar");
+    const shakeImg = document.getElementById("shakeImg");
 
-      const timerEl = document.getElementById('timer');
-      const progressBar = document.getElementById('progressBar');
-      const startSound = document.getElementById('startSound');
-      const endSound = document.getElementById('endSound');
+    const imageMap = {
+      Work: "https://privateorchids.neocities.org/5CDEA46B-9DAB-489A-92DD-63FA1A10B1BB.webp",
+      Break: "https://privateorchids.neocities.org/EB175A40-C9E2-4458-BB6E-1D402F5CC419.webp",
+      "Long Break": "https://privateorchids.neocities.org/B831E612-FC88-45DF-87A6-64471BEE1B5D.webp"
+    };
 
-      function updateDisplay(){
-        const m = Math.floor(timeLeft/60);
-        const s = timeLeft%60;
-        timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        const total = sequence[idx]*60;
-        progressBar.style.width = `${((total - timeLeft)/total)*100}%`;
-      }
+    const sequence = [
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+      { label: "Work", minutes: 25 },
+      { label: "Long Break", minutes: 30 },
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+      { label: "Work", minutes: 25 },
+      { label: "Break", minutes: 5 },
+    ];
 
-      function tick(){
-        if(timeLeft>0){ timeLeft--; updateDisplay(); }
-        else{
-          clearInterval(timer); running=false;
-          endSound.play(); // Play end sound
-          idx=(idx+1)%sequence.length; timeLeft=sequence[idx]*60; updateDisplay();
+    let current = 0;
+    let timeLeft = sequence[current].minutes * 60;
+    let timer;
+    let running = false;
+    let sessionNumber = 1;
+
+    function updateDisplay() {
+      const min = Math.floor(timeLeft / 60);
+      const sec = timeLeft % 60;
+      timerDisplay.textContent = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+      updateProgressBar();
+    }
+
+    function updateProgressBar() {
+      const progress = ((sequence[current].minutes * 60 - timeLeft) / (sequence[current].minutes * 60)) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    function updateStatus() {
+      statusDisplay.textContent = `Session ${sessionNumber} of 12 — ${sequence[current].label}`;
+    }
+
+    function startTimer() {
+      if (running) return;
+      running = true;
+
+      // Only play start sound when Start button is clicked
+      startSound.play().catch(() => {});
+
+      timer = setInterval(() => {
+        timeLeft--;
+        updateDisplay();
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          running = false;
+
+          // Play end sound
+          endSound.play().catch(() => {});
+
+          // PNG shake for 3.5s
+          playShake(sequence[current].label);
+
+          nextSession();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timer);
+      running = false;
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      running = false;
+      sessionNumber = 1;
+      current = 0;
+      timeLeft = sequence[current].minutes * 60;
+      updateStatus();
+      updateDisplay();
+    }
+
+    function nextSession() {
+      current++;
+      if (current >= sequence.length) {
+        current = 0;
+        sessionNumber++;
+        if (sessionNumber > 12) {
+          alert("🎀 You've completed all 12 Pomodoros for the day! 🎀");
+          sessionNumber = 1;
         }
       }
-
-      document.getElementById('startBtn').addEventListener('click', ()=>{
-        if(running) return; running=true; timer=setInterval(tick,1000);
-        startSound.play(); // Play start sound
-      });
-      document.getElementById('pauseBtn').addEventListener('click', ()=>{ running=false; clearInterval(timer); });
-      document.getElementById('resetBtn').addEventListener('click', ()=>{ running=false; clearInterval(timer); timeLeft=sequence[idx]*60; updateDisplay(); });
-      document.getElementById('skipBtn').addEventListener('click', ()=>{ running=false; clearInterval(timer); idx=(idx+1)%sequence.length; timeLeft=sequence[idx]*60; updateDisplay(); });
-
+      timeLeft = sequence[current].minutes * 60;
+      updateStatus();
       updateDisplay();
-    })();
+      startTimer();
+    }
 
-    /*************** To-Do, Habits, Journal JS ****************/
-    (function(){
-      const addTask = function(listId, inputId){
-        const taskText = document.getElementById(inputId).value;
-        if(taskText.trim() === "") return;
-        
-        const taskElement = document.createElement("div");
-        taskElement.classList.add('todo-task');
-        taskElement.innerHTML = `${taskText}<div class="task-actions"><button class="small-btn delete-btn">X</button></div>`;
-        document.getElementById(listId).appendChild(taskElement);
-        document.getElementById(inputId).value = "";
+    function skipSession() {
+      pauseTimer();
+      nextSession();
+    }
 
-        taskElement.querySelector(".delete-btn").addEventListener('click', ()=>{
-          taskElement.remove();
-        });
-      }
+    function backSession() {
+      pauseTimer();
+      current--;
+      if (current < 0) current = sequence.length - 1;
+      timeLeft = sequence[current].minutes * 60;
+      updateStatus();
+      updateDisplay();
+    }
 
-      document.getElementById("addListBtn").addEventListener('click', ()=>{
-        const listTitle = document.getElementById('newListInput').value;
-        if(listTitle.trim() === "") return;
-        
-        const listElement = document.createElement("div");
-        listElement.classList.add('todo-list-block');
-        listElement.innerHTML = `
-          <div class="todo-list-title">
-            <strong>${listTitle}</strong>
-            <button class="small-btn delete-list-btn">Delete</button>
-          </div>
-          <div class="list" id="list-${listTitle}"></div>
-          <input type="text" class="add-input" id="input-${listTitle}" placeholder="New task..." />
-          <button class="small-btn" onclick="addTask('list-${listTitle}', 'input-${listTitle}')">Add Task</button>
-        `;
-        
-        document.getElementById('listsContainer').appendChild(listElement);
-        document.getElementById('newListInput').value = "";
+    document.getElementById("startBtn").onclick = startTimer;
+    document.getElementById("pauseBtn").onclick = pauseTimer;
+    document.getElementById("resetBtn").onclick = resetTimer;
+    document.getElementById("skipBtn").onclick = skipSession;
+    document.getElementById("backBtn").onclick = backSession;
 
-        listElement.querySelector(".delete-list-btn").addEventListener('click', ()=>{
-          listElement.remove();
-        });
-      });
+    updateStatus();
+    updateDisplay();
 
-      document.getElementById("clearAllLists").addEventListener('click', ()=>{
-        document.getElementById('listsContainer').innerHTML = "";
-      });
+    function playShake(label) {
+      const url = imageMap[label];
+      if (!url) return;
 
-      document.getElementById("addHabitBtn").addEventListener('click', ()=>{
-        const habitName = document.getElementById("newHabitInput").value;
-        if(habitName.trim() === "") return;
+      shakeImg.src = url;
+      shakeImg.style.display = "block";
+      shakeImg.classList.add("shake");
 
-        const habitElement = document.createElement("div");
-        habitElement.classList.add('habit-block');
-        habitElement.innerHTML = `
-          <div class="habit-name">${habitName}</div>
-          <div class="streak">0</div>
-          <button class="small-btn" onclick="incrementStreak(this)">Increment Streak</button>
-        `;
-
-        document.getElementById("habitList").appendChild(habitElement);
-        document.getElementById("newHabitInput").value = "";
-      });
-
-      document.getElementById("clearAllHabits").addEventListener('click', ()=>{
-        document.getElementById('habitList').innerHTML = "";
-      });
-
-      function incrementStreak(button){
-        const streakElement = button.previousElementSibling;
-        let streak = parseInt(streakElement.textContent);
-        streak++;
-        streakElement.textContent = streak;
-      }
-
-      document.getElementById("addJournalBtn").addEventListener('click', ()=>{
-        const journalTitle = document.getElementById("newJournalTitle").value;
-        if(journalTitle.trim() === "") return;
-
-        const journalEntry = document.createElement("div");
-        journalEntry.classList.add("journal-entry");
-        journalEntry.innerHTML = `
-          <strong>${journalTitle}</strong><span class="meta">${new Date().toLocaleDateString()}</span>
-        `;
-        document.getElementById("journalList").appendChild(journalEntry);
-        document.getElementById("newJournalTitle").value = "";
-      });
-
-      document.getElementById("deleteAllJournalBtn").addEventListener('click', ()=>{
-        document.getElementById("journalList").innerHTML = "";
-      });
-
-    })();
+      setTimeout(() => {
+        shakeImg.classList.remove("shake");
+        shakeImg.style.display = "none";
+      }, 3500);
+    }
   </script>
+
 </body>
 </html>
+
 
 
