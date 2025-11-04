@@ -19,16 +19,18 @@
       color: #806676;
       text-align: center;
     }
+
     .container {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       grid-gap: 20px;
       padding: 30px;
-      width: 80%;
+      width: 90%;
       max-width: 1000px;
       box-shadow: 0 0 30px rgba(255, 183, 208, 0.7);
       position: relative;
     }
+
     .bubble {
       background: rgba(255, 255, 255, 0.8);
       border-radius: 20px;
@@ -38,68 +40,76 @@
       justify-content: center;
       align-items: center;
       transition: transform 0.3s ease-in-out;
-      height: 200px;
-      font-size: 1.5em;
-      color: #ff4c8b;
+      height: 250px;
+      width: 250px;
       position: relative;
+      overflow: hidden;
     }
+
     .bubble:hover {
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
+
     .bubble h2 {
       margin: 0;
-      font-size: 1.6em;
+      font-size: 1.4em;
       text-align: center;
     }
+
     .timer {
       background: #fff;
       border: 5px solid #ff81a5;
       border-radius: 50%;
-      width: 220px;
-      height: 220px;
-      line-height: 220px;
-      font-size: 3em;
-      margin: 20px auto;
+      width: 150px;
+      height: 150px;
+      line-height: 150px;
+      font-size: 2.5em;
       box-shadow: 0 0 20px rgba(255, 183, 208, 0.8);
       transition: transform 0.3s ease-in-out;
     }
+
     .timer:hover {
       transform: scale(1.1);
     }
+
     .progress-bar-container {
-      width: 250px;
+      width: 200px;
       height: 10px;
       background-color: #fff;
       border-radius: 10px;
       margin: 15px auto;
       box-shadow: 0 0 15px rgba(255, 183, 208, 0.5);
     }
+
     .progress-bar {
       height: 100%;
       background-color: #ff81a5;
       border-radius: 10px;
     }
+
     button {
       background: #ffb6d0;
       color: white;
       border: none;
       border-radius: 30px;
-      padding: 15px 30px;
+      padding: 10px 20px;
       margin: 10px;
       font-size: 1.2em;
       cursor: pointer;
       transition: all 0.3s ease;
       font-family: 'Baloo 2', cursive;
     }
+
     button:hover {
       background: #806676;
       transform: scale(1.1);
     }
+
     button:active {
       transform: scale(0.95);
     }
 
-    /* Styles for the pin-protected journal */
+    /* Journal Section */
     #journalInput {
       width: 100%;
       height: 100%;
@@ -107,6 +117,7 @@
       border: none;
       resize: none;
     }
+
     #pinInput {
       font-size: 1.2em;
       margin: 10px;
@@ -115,11 +126,19 @@
       border-radius: 10px;
     }
 
-    /* Media player styling */
+    /* Media player */
     #mediaPlayer {
       width: 100%;
       height: 100%;
     }
+
+    /* Doodle Board */
+    #doodleCanvas {
+      width: 100%;
+      height: 100%;
+      border: 2px solid #ff81a5;
+    }
+
   </style>
 </head>
 
@@ -149,18 +168,14 @@
     <!-- To-Do List Bubble -->
     <div class="bubble">
       <h2>To-Do List</h2>
-      <ul id="todoList">
-        <li>Example Task</li>
-      </ul>
+      <div id="todoList"></div>
       <button id="addTodo">Add Task</button>
     </div>
 
     <!-- Habit Tracker Bubble -->
     <div class="bubble">
       <h2>Habit Tracker</h2>
-      <ul id="habitList">
-        <li>Drink Water</li>
-      </ul>
+      <div id="habitList"></div>
       <button id="addHabit">Add Habit</button>
     </div>
 
@@ -173,7 +188,7 @@
     <!-- Doodle Board Bubble -->
     <div class="bubble">
       <h2>Doodle Board</h2>
-      <canvas id="doodleCanvas" width="200" height="200" style="border: 2px solid #ff81a5;"></canvas>
+      <canvas id="doodleCanvas" width="200" height="200"></canvas>
       <button id="saveDoodle">Save Doodle</button>
     </div>
   </div>
@@ -229,7 +244,6 @@
       timer = setInterval(() => {
         timeLeft--;
         updateDisplay();
-
         if (timeLeft <= 0) {
           clearInterval(timer);
           running = false;
@@ -245,10 +259,6 @@
     }
 
     function resetTimer() {
-      clearInterval(timer);
-      running = false;
-      sessionNumber = 1;
-      current = 0;
       timeLeft = sequence[current].minutes * 60;
       updateDisplay();
     }
@@ -299,8 +309,9 @@
     addTodoBtn.addEventListener("click", () => {
       const newTask = prompt("Enter a new task:");
       if (newTask) {
-        const li = document.createElement("li");
+        const li = document.createElement("div");
         li.textContent = newTask;
+        li.classList.add('task');
         todoList.appendChild(li);
       }
     });
@@ -312,8 +323,9 @@
     addHabitBtn.addEventListener("click", () => {
       const newHabit = prompt("Enter a new habit:");
       if (newHabit) {
-        const li = document.createElement("li");
+        const li = document.createElement("div");
         li.textContent = newHabit;
+        li.classList.add('habit');
         habitList.appendChild(li);
       }
     });
@@ -364,6 +376,8 @@
     document.getElementById("resetBtn").onclick = resetTimer;
     document.getElementById("skipBtn").onclick = skipSession;
     document.getElementById("backBtn").onclick = backSession;
+
   </script>
+
 </body>
 </html>
