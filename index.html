@@ -6,12 +6,10 @@
   <title>⛧°♱. ⋆༺Pomodoro༻⋆. ♱°⛧</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500&display=swap" rel="stylesheet">
   <style>
-    /* Global Styles */
     body {
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
       height: 100vh;
       background-image: url('https://privateorchids.neocities.org/image_2025-11-02_230140058.png');
       background-size: cover;
@@ -21,34 +19,21 @@
       color: #806676;
       text-align: center;
     }
+    .container {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(255, 183, 208, 0.7);
+      position: relative;
+    }
     h1 {
       font-size: 2em;
       color: #ff4c8b;
       margin-bottom: 20px;
       text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.6);
     }
-    .bubble {
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 0 20px rgba(255, 183, 208, 0.7);
-      margin: 20px auto;
-      max-width: 500px;
-      width: 80%;
-    }
-    button {
-      background: #ffb6d0;
-      color: white;
-      border-radius: 5px;
-      padding: 10px 20px;
-      cursor: pointer;
-      margin: 5px;
-    }
-    button:hover {
-      background-color: #806676;
-    }
-
-    /* Timer Styles */
     .timer {
       background: #fff;
       border: 5px solid #ff81a5;
@@ -64,8 +49,6 @@
     .timer:hover {
       transform: scale(1.1);
     }
-
-    /* Progress Bar Styles */
     .progress-bar-container {
       width: 250px;
       height: 10px;
@@ -79,35 +62,54 @@
       background-color: #ff81a5;
       border-radius: 10px;
     }
-
-    /* Bubble-specific Styles (Journal, To-Do, Habit Tracker, etc.) */
-    textarea {
-      width: 100%;
-      height: 150px;
-      margin-bottom: 10px;
-      padding: 10px;
-      font-size: 1em;
-      border-radius: 10px;
-      border: 1px solid #ff81a5;
+    button {
+      background: #ffb6d0;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Baloo 2', cursive;
     }
-    input[type="text"] {
-      width: 80%;
-      padding: 10px;
-      margin-bottom: 10px;
-      font-size: 1em;
+    button:hover {
+      background: #806676;
+      transform: scale(1.1);
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    #status {
+      font-size: 1.4em;
+      margin-top: 20px;
+      color: #ff4c8b;
     }
 
-    /* Media Player Styles */
-    iframe {
-      border-radius: 10px;
+    /* Shake image + animation */
+    #shakeImg {
+      position: absolute;
+      width: 200px;
+      height: auto;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 5;
+      display: none;
     }
 
-    /* Doodle Board Styles */
-    canvas {
-      border: 2px solid #ff81a5;
-      background-color: #fff;
-      display: block;
-      margin-bottom: 10px;
+    @keyframes shake {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      20% { transform: translate(calc(-50% - 10px), -50%) rotate(-5deg); }
+      40% { transform: translate(calc(-50% + 10px), -50%) rotate(5deg); }
+      60% { transform: translate(calc(-50% - 10px), -50%) rotate(-5deg); }
+      80% { transform: translate(calc(-50% + 10px), -50%) rotate(5deg); }
+      100% { transform: translate(-50%, -50%) rotate(0deg); }
+    }
+    .shake {
+      animation: shake 0.7s ease;
     }
   </style>
 </head>
@@ -139,54 +141,7 @@
 
   </div>
 
-  <!-- Journal Bubble -->
-  <div class="bubble" id="journalBubble">
-    <div id="journalSection" style="display:none;">
-      <h2>My Journal</h2>
-      <textarea id="journalText" placeholder="Write your journal entry here..."></textarea>
-      <button id="saveJournal">Save</button>
-      <button id="clearJournal">Clear</button>
-    </div>
-
-    <div id="pinPrompt">
-      <h2>Enter PIN to Access Journal</h2>
-      <input type="password" id="pinInput" placeholder="Enter PIN">
-      <button id="unlockJournal">Unlock Journal</button>
-    </div>
-  </div>
-
-  <!-- To-Do List Bubble -->
-  <div class="bubble" id="todoListBubble">
-    <h2>To-Do List</h2>
-    <input type="text" id="taskInput" placeholder="Add new task...">
-    <button id="addTaskBtn">Add Task</button>
-    <ul id="taskList"></ul>
-  </div>
-
-  <!-- Habit Tracker Bubble -->
-  <div class="bubble" id="habitTrackerBubble">
-    <h2>Habit Tracker</h2>
-    <input type="text" id="habitInput" placeholder="Add a new habit">
-    <button id="addHabitBtn">Add Habit</button>
-    <ul id="habitList"></ul>
-  </div>
-
-  <!-- Media Player Bubble (YouTube) -->
-  <div class="bubble" id="youtubePlayerBubble">
-    <h2>Media Player</h2>
-    <iframe id="youtubePlayer" width="100%" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  </div>
-
-  <!-- Doodle Board Bubble -->
-  <div class="bubble" id="doodleBoardBubble">
-    <h2>Doodle Board</h2>
-    <canvas id="doodleCanvas" width="400" height="400"></canvas>
-    <button id="clearDoodleBtn">Clear Doodle</button>
-    <button id="saveDoodleBtn">Save Doodle</button>
-  </div>
-
   <script>
-    // Timer Functionality (Same as before)
     const timerDisplay = document.getElementById("timer");
     const statusDisplay = document.getElementById("status");
     const startSound = document.getElementById("startSound");
@@ -208,7 +163,7 @@
       { label: "Work", minutes: 25 },
       { label: "Break", minutes: 5 },
       { label: "Work", minutes: 25 },
-      { label: "Long Break", minutes: 15 },
+      { label: "Long Break", minutes: 30 },
       { label: "Work", minutes: 25 },
       { label: "Break", minutes: 5 },
       { label: "Work", minutes: 25 },
@@ -224,7 +179,7 @@
     function updateDisplay() {
       const min = Math.floor(timeLeft / 60);
       const sec = timeLeft % 60;
-      timerDisplay.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+      timerDisplay.textContent = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
       updateProgressBar();
     }
 
@@ -240,6 +195,8 @@
     function startTimer() {
       if (running) return;
       running = true;
+
+      // Only play start sound when Start button is clicked
       startSound.play().catch(() => {});
 
       timer = setInterval(() => {
@@ -249,8 +206,13 @@
         if (timeLeft <= 0) {
           clearInterval(timer);
           running = false;
+
+          // Play end sound
           endSound.play().catch(() => {});
+
+          // PNG shake for 3.5s
           playShake(sequence[current].label);
+
           nextSession();
         }
       }, 1000);
@@ -284,111 +246,27 @@
       timeLeft = sequence[current].minutes * 60;
       updateStatus();
       updateDisplay();
-      startTimer();
     }
 
-    function skipSession() {
-      pauseTimer();
-      nextSession();
+    function playShake(label) {
+      shakeImg.src = imageMap[label] || imageMap["Work"];
+      shakeImg.style.display = 'block';
+      shakeImg.classList.add("shake");
+
+      setTimeout(() => {
+        shakeImg.style.display = 'none';
+        shakeImg.classList.remove("shake");
+      }, 3500); // shake animation duration
     }
 
-    function backSession() {
-      pauseTimer();
-      current--;
-      if (current < 0) current = sequence.length - 1;
-      timeLeft = sequence[current].minutes * 60;
-      updateStatus();
-      updateDisplay();
-    }
+    document.getElementById("startBtn").addEventListener("click", startTimer);
+    document.getElementById("pauseBtn").addEventListener("click", pauseTimer);
+    document.getElementById("resetBtn").addEventListener("click", resetTimer);
+    document.getElementById("skipBtn").addEventListener("click", nextSession);
 
-    document.getElementById("startBtn").onclick = startTimer;
-    document.getElementById("pauseBtn").onclick = pauseTimer;
-    document.getElementById("resetBtn").onclick = resetTimer;
-    document.getElementById("skipBtn").onclick = skipSession;
-    document.getElementById("backBtn").onclick = backSession;
-
-    updateStatus();
+    // Initial setup
     updateDisplay();
-
-    // Journal Section (PIN Protection)
-    const pinPrompt = document.getElementById("pinPrompt");
-    const journalSection = document.getElementById("journalSection");
-    const pinInput = document.getElementById("pinInput");
-    const unlockJournalBtn = document.getElementById("unlockJournal");
-
-    unlockJournalBtn.onclick = function () {
-      const pin = pinInput.value;
-      if (pin === "1234") {
-        pinPrompt.style.display = "none";
-        journalSection.style.display = "block";
-      } else {
-        alert("Incorrect PIN!");
-      }
-    };
-
-    // To-Do List
-    const addTaskBtn = document.getElementById("addTaskBtn");
-    const taskInput = document.getElementById("taskInput");
-    const taskList = document.getElementById("taskList");
-
-    addTaskBtn.onclick = function () {
-      const task = taskInput.value.trim();
-      if (task) {
-        const taskItem = document.createElement("li");
-        taskItem.textContent = task;
-        taskList.appendChild(taskItem);
-        taskInput.value = "";
-      }
-    };
-
-    // Habit Tracker
-    const addHabitBtn = document.getElementById("addHabitBtn");
-    const habitInput = document.getElementById("habitInput");
-    const habitList = document.getElementById("habitList");
-
-    addHabitBtn.onclick = function () {
-      const habit = habitInput.value.trim();
-      if (habit) {
-        const habitItem = document.createElement("li");
-        habitItem.textContent = habit;
-        habitList.appendChild(habitItem);
-        habitInput.value = "";
-      }
-    };
-
-    // Doodle Board
-    const doodleCanvas = document.getElementById("doodleCanvas");
-    const ctx = doodleCanvas.getContext("2d");
-
-    let drawing = false;
-
-    doodleCanvas.onmousedown = function (e) {
-      drawing = true;
-      ctx.moveTo(e.offsetX, e.offsetY);
-    };
-
-    doodleCanvas.onmousemove = function (e) {
-      if (drawing) {
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
-      }
-    };
-
-    doodleCanvas.onmouseup = function () {
-      drawing = false;
-    };
-
-    document.getElementById("clearDoodleBtn").onclick = function () {
-      ctx.clearRect(0, 0, doodleCanvas.width, doodleCanvas.height);
-    };
-
-    document.getElementById("saveDoodleBtn").onclick = function () {
-      const image = doodleCanvas.toDataURL();
-      const link = document.createElement("a");
-      link.href = image;
-      link.download = "doodle.png";
-      link.click();
-    };
+    updateStatus();
   </script>
 
 </body>
