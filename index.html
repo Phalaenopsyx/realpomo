@@ -22,13 +22,12 @@
 
     .container {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
       padding: 30px;
       width: 90%;
       max-width: 1000px;
       box-shadow: 0 0 30px rgba(255, 183, 208, 0.7);
-      position: relative;
     }
 
     .bubble {
@@ -37,12 +36,12 @@
       padding: 20px;
       box-shadow: 0 0 20px rgba(255, 183, 208, 0.7);
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       transition: transform 0.3s ease-in-out;
-      height: 250px;
       width: 250px;
-      position: relative;
+      height: 250px;
       overflow: hidden;
     }
 
@@ -51,19 +50,18 @@
     }
 
     .bubble h2 {
-      margin: 0;
-      font-size: 1.4em;
-      text-align: center;
+      margin-bottom: 10px;
+      font-size: 1.3em;
     }
 
     .timer {
       background: #fff;
       border: 5px solid #ff81a5;
       border-radius: 50%;
-      width: 150px;
-      height: 150px;
-      line-height: 150px;
-      font-size: 2.5em;
+      width: 120px;
+      height: 120px;
+      line-height: 120px;
+      font-size: 2em;
       box-shadow: 0 0 20px rgba(255, 183, 208, 0.8);
       transition: transform 0.3s ease-in-out;
     }
@@ -73,18 +71,19 @@
     }
 
     .progress-bar-container {
-      width: 200px;
-      height: 10px;
+      width: 80%;
+      height: 8px;
       background-color: #fff;
       border-radius: 10px;
-      margin: 15px auto;
-      box-shadow: 0 0 15px rgba(255, 183, 208, 0.5);
+      margin: 10px 0;
+      box-shadow: 0 0 10px rgba(255, 183, 208, 0.5);
     }
 
     .progress-bar {
       height: 100%;
       background-color: #ff81a5;
       border-radius: 10px;
+      width: 0%;
     }
 
     button {
@@ -92,9 +91,9 @@
       color: white;
       border: none;
       border-radius: 30px;
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 1.2em;
+      padding: 6px 12px;
+      margin: 4px;
+      font-size: 1em;
       cursor: pointer;
       transition: all 0.3s ease;
       font-family: 'Baloo 2', cursive;
@@ -102,103 +101,115 @@
 
     button:hover {
       background: #806676;
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
 
-    button:active {
-      transform: scale(0.95);
-    }
-
-    /* Journal Section */
     #journalInput {
       width: 100%;
-      height: 100%;
-      font-size: 1.2em;
-      border: none;
+      height: 100px;
+      font-size: 1em;
+      border: 1px solid #ff81a5;
+      border-radius: 10px;
+      padding: 5px;
       resize: none;
+      background-color: rgba(255,255,255,0.7);
     }
 
     #pinInput {
-      font-size: 1.2em;
-      margin: 10px;
+      font-size: 1em;
+      margin-top: 5px;
       padding: 5px;
       border: 1px solid #ff81a5;
       border-radius: 10px;
+      text-align: center;
     }
 
-    /* Media player */
-    #mediaPlayer {
+    .list {
       width: 100%;
-      height: 100%;
+      height: 100px;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.6);
+      border-radius: 10px;
+      padding: 5px;
+      border: 1px solid #ff81a5;
     }
 
-    /* Doodle Board */
-    #doodleCanvas {
-      width: 100%;
-      height: 100%;
-      border: 2px solid #ff81a5;
+    .list-item {
+      margin: 3px 0;
+      padding: 3px 6px;
+      background: #ffe3ec;
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
+
+    input.add-input {
+      width: 80%;
+      padding: 5px;
+      border: 1px solid #ff81a5;
+      border-radius: 10px;
+      margin-bottom: 5px;
+    }
+
+    iframe {
+      border-radius: 15px;
     }
 
   </style>
 </head>
-
 <body>
-
   <div class="container">
-    <!-- Timer Bubble -->
+    <!-- Pomodoro Timer -->
     <div class="bubble">
+      <h2>Pomodoro Timer</h2>
       <div class="timer" id="timer">25:00</div>
-      <div class="progress-bar-container">
-        <div class="progress-bar" id="progressBar"></div>
+      <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+      <div>
+        <button id="startBtn">Start</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="resetBtn">Reset</button>
+        <button id="skipBtn">Skip</button>
       </div>
-      <button id="startBtn">Start</button>
-      <button id="pauseBtn">Pause</button>
-      <button id="resetBtn">Reset</button>
-      <button id="skipBtn">Skip</button>
-      <button id="backBtn">Back</button>
     </div>
 
-    <!-- Journal Bubble -->
+    <!-- Journal -->
     <div class="bubble">
       <h2>Journal (Pin Protected)</h2>
       <textarea id="journalInput" placeholder="Enter your journal entry..." disabled></textarea>
       <input type="password" id="pinInput" placeholder="Enter PIN to unlock">
     </div>
 
-    <!-- To-Do List Bubble -->
+    <!-- To-Do List -->
     <div class="bubble">
       <h2>To-Do List</h2>
-      <div id="todoList"></div>
-      <button id="addTodo">Add Task</button>
+      <input type="text" id="todoInput" class="add-input" placeholder="New task...">
+      <button id="addTodo">Add</button>
+      <div id="todoList" class="list"></div>
     </div>
 
-    <!-- Habit Tracker Bubble -->
+    <!-- Habit Tracker -->
     <div class="bubble">
       <h2>Habit Tracker</h2>
-      <div id="habitList"></div>
-      <button id="addHabit">Add Habit</button>
+      <input type="text" id="habitInput" class="add-input" placeholder="New habit...">
+      <button id="addHabit">Add</button>
+      <div id="habitList" class="list"></div>
     </div>
 
-    <!-- Media Player Bubble -->
+    <!-- Media Player -->
     <div class="bubble">
       <h2>Media Player</h2>
-      <iframe id="mediaPlayer" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
-
-    <!-- Doodle Board Bubble -->
-    <div class="bubble">
-      <h2>Doodle Board</h2>
-      <canvas id="doodleCanvas" width="200" height="200"></canvas>
-      <button id="saveDoodle">Save Doodle</button>
+      <iframe id="mediaPlayer" width="220" height="120"
+        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
     </div>
   </div>
 
   <script>
-    // Timer functionality
+    // Pomodoro Timer
     const timerDisplay = document.getElementById("timer");
     const progressBar = document.getElementById("progressBar");
-    const startSound = new Audio("realstart.mp3");
-    const endSound = new Audio("realend.mp3");
 
     const sequence = [
       { label: "Work", minutes: 25 },
@@ -208,18 +219,13 @@
       { label: "Work", minutes: 25 },
       { label: "Break", minutes: 5 },
       { label: "Work", minutes: 25 },
-      { label: "Long Break", minutes: 30 },
-      { label: "Work", minutes: 25 },
-      { label: "Break", minutes: 5 },
-      { label: "Work", minutes: 25 },
-      { label: "Break", minutes: 5 },
+      { label: "Long Break", minutes: 30 }
     ];
 
     let current = 0;
     let timeLeft = sequence[current].minutes * 60;
     let running = false;
     let timer;
-    let sessionNumber = 1;
 
     function updateDisplay() {
       const min = Math.floor(timeLeft / 60);
@@ -233,22 +239,18 @@
       progressBar.style.width = `${progress}%`;
     }
 
-    function updateStatus() {
-      document.getElementById("status").textContent = `Session ${sessionNumber} of 12 — ${sequence[current].label}`;
-    }
-
     function startTimer() {
       if (running) return;
       running = true;
-      startSound.play();
       timer = setInterval(() => {
         timeLeft--;
         updateDisplay();
         if (timeLeft <= 0) {
           clearInterval(timer);
           running = false;
-          endSound.play();
-          nextSession();
+          current = (current + 1) % sequence.length;
+          timeLeft = sequence[current].minutes * 60;
+          updateDisplay();
         }
       }, 1000);
     }
@@ -259,125 +261,69 @@
     }
 
     function resetTimer() {
-      timeLeft = sequence[current].minutes * 60;
-      updateDisplay();
-    }
-
-    function nextSession() {
-      current++;
-      if (current >= sequence.length) {
-        current = 0;
-        sessionNumber++;
-        if (sessionNumber > 12) {
-          alert("🎀 You've completed all 12 Pomodoros for the day! 🎀");
-          sessionNumber = 1;
-        }
-      }
+      clearInterval(timer);
+      running = false;
       timeLeft = sequence[current].minutes * 60;
       updateDisplay();
     }
 
     function skipSession() {
-      pauseTimer();
-      nextSession();
-    }
-
-    function backSession() {
-      pauseTimer();
-      current--;
-      if (current < 0) current = sequence.length - 1;
+      clearInterval(timer);
+      running = false;
+      current = (current + 1) % sequence.length;
       timeLeft = sequence[current].minutes * 60;
       updateDisplay();
     }
 
-    // Journal functionality
+    document.getElementById("startBtn").onclick = startTimer;
+    document.getElementById("pauseBtn").onclick = pauseTimer;
+    document.getElementById("resetBtn").onclick = resetTimer;
+    document.getElementById("skipBtn").onclick = skipSession;
+
+    // Journal Pin Unlock
     const journalInput = document.getElementById("journalInput");
     const pinInput = document.getElementById("pinInput");
 
     pinInput.addEventListener("input", () => {
       if (pinInput.value === "1234") {
         journalInput.disabled = false;
-        pinInput.disabled = true;
         pinInput.value = "";
+        pinInput.placeholder = "Unlocked!";
       }
     });
 
-    // To-Do List functionality
-    const addTodoBtn = document.getElementById("addTodo");
+    // To-do List
+    const todoInput = document.getElementById("todoInput");
     const todoList = document.getElementById("todoList");
-
-    addTodoBtn.addEventListener("click", () => {
-      const newTask = prompt("Enter a new task:");
-      if (newTask) {
-        const li = document.createElement("div");
-        li.textContent = newTask;
-        li.classList.add('task');
-        todoList.appendChild(li);
+    document.getElementById("addTodo").addEventListener("click", () => {
+      const task = todoInput.value.trim();
+      if (task) {
+        const div = document.createElement("div");
+        div.textContent = task;
+        div.classList.add("list-item");
+        div.onclick = () => div.remove();
+        todoList.appendChild(div);
+        todoInput.value = "";
       }
     });
 
-    // Habit Tracker functionality
-    const addHabitBtn = document.getElementById("addHabit");
+    // Habit Tracker
+    const habitInput = document.getElementById("habitInput");
     const habitList = document.getElementById("habitList");
-
-    addHabitBtn.addEventListener("click", () => {
-      const newHabit = prompt("Enter a new habit:");
-      if (newHabit) {
-        const li = document.createElement("div");
-        li.textContent = newHabit;
-        li.classList.add('habit');
-        habitList.appendChild(li);
+    document.getElementById("addHabit").addEventListener("click", () => {
+      const habit = habitInput.value.trim();
+      if (habit) {
+        const div = document.createElement("div");
+        div.textContent = habit;
+        div.classList.add("list-item");
+        div.onclick = () => div.classList.toggle("completed");
+        habitList.appendChild(div);
+        habitInput.value = "";
       }
     });
 
-    // Doodle Board functionality
-    const canvas = document.getElementById("doodleCanvas");
-    const ctx = canvas.getContext("2d");
-    let painting = false;
-
-    function startPosition(e) {
-      painting = true;
-      draw(e);
-    }
-
-    function endPosition() {
-      painting = false;
-      ctx.beginPath();
-    }
-
-    function draw(e) {
-      if (!painting) return;
-      ctx.lineWidth = 5;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = "#ff4c8b";
-      ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-    }
-
-    canvas.addEventListener("mousedown", startPosition);
-    canvas.addEventListener("mouseup", endPosition);
-    canvas.addEventListener("mousemove", draw);
-
-    const saveDoodleBtn = document.getElementById("saveDoodle");
-
-    saveDoodleBtn.addEventListener("click", () => {
-      const dataUrl = canvas.toDataURL();
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = "doodle.png";
-      link.click();
-    });
-
-    // Event listeners for Timer controls
-    document.getElementById("startBtn").onclick = startTimer;
-    document.getElementById("pauseBtn").onclick = pauseTimer;
-    document.getElementById("resetBtn").onclick = resetTimer;
-    document.getElementById("skipBtn").onclick = skipSession;
-    document.getElementById("backBtn").onclick = backSession;
-
+    updateDisplay();
   </script>
-
 </body>
 </html>
+
